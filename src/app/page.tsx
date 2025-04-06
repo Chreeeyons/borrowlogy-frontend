@@ -3,13 +3,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import './globals.css';
-import { signIn, signOut } from "next-auth/react";
+import { signIn } from "next-auth/react";
+// import { signIn, signOut } from "next-auth/react";
 
 export default function Home() {
   const handleLogin = async () => {
     try {
       // Redirects the user to Google authentication and then to /equipment
       await signIn("google", { callbackUrl: "/equipment" });
+
     } catch (error) {
       console.error("Error during sign-in:", error);
     }
@@ -24,10 +26,10 @@ export default function Home() {
     console.log("All cookies cleared!");
   };
 
-  const handleLogout = () => {
-    clearCookies(); // Clear all cookies
-    signOut({ callbackUrl: "/" }); // Redirect to homepage after logout
-  };
+  // const handleLogout = () => {
+  //   clearCookies(); // Clear all cookies
+  //   signOut({ callbackUrl: "/" }); // Redirect to homepage after logout
+  // };
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-white">
