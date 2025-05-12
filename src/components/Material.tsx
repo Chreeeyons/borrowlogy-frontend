@@ -102,7 +102,7 @@ const Material = ({
                 type="text"
                 value={quantity}
                 readOnly
-                className="w-12 h-9 text-center bg-gray-200 text-[#8C1931]"
+                className="w-12 h-9 text-center font-bold bg-gray-200 text-[#8C1931]"
               />
               <button
                 onClick={handleIncrease}
