@@ -34,12 +34,19 @@ const Cart = () => {
     fetchCartData(); // Refresh cart data after clearing
   };
 
-  return (
-    <div className="border p-4 bg-[#8C1931] rounded-md text-white">
-      {/* Transaction number placeholder */}
-      <p className="text-2xl font-semibold tracking-wider">
-        Transaction #{cartItems?.cart_id}
-      </p>
+return (
+  <div
+    className="p-4 text-white"
+    style={{
+      backgroundColor: '#83191c',
+      borderRadius: '16px',
+      boxShadow: '6px 6px 4px 0px rgba(0, 0, 0, 0.25) inset',
+    }}
+  >
+    {/* Transaction number placeholder */}
+    <p className="text-4xl font-semibold tracking-normal">
+      Transaction #{cartItems?.cart_id}
+    </p>
 
       {/* Items in cart placeholder */}
       <ul className="mt-2 list-disc pl-20">
@@ -51,30 +58,93 @@ const Cart = () => {
         ))}
       </ul>
 
-      {/* Remarks input placeholder */}
-      <label className="font-medium block mt-4">
-        Remarks:
-        <textarea
-          className="w-full border rounded p-2 mt-2 font-normal text-black bg-white"
-          placeholder="Enter remarks here..."
-          onChange={(e) => setRemarks(e.target.value)}
-          value={remarks}
-        ></textarea>
-      </label>
+  {/* Remarks input placeholder */}
+  <label className="font-bold block mt-4 text-white">
+    REMARKS:
+    <textarea
+      style={{
+        width: '100%',
+        height: '100px',
+        borderRadius: '10px',
+        background: '#FFF',
+        boxShadow: '3px 3px 2.886px 0px rgba(0, 0, 0, 0.25) inset',
+        padding: '0.5rem',
+        marginTop: '0.5rem',
+        color: '#000',
+        fontWeight: '400',
+        fontFamily: 'inherit',
+        resize: 'vertical', // optional, allows resizing
+      }}
+      placeholder="Enter remarks here..."
+      onChange={(e) => setRemarks(e.target.value)}
+      value={remarks}
+    />
+  </label>
 
-      {/* Action buttons (placeholders) */}
-      <div className="flex justify-between mt-4">
+      {/* Action buttons (styled per Figma) */}
+      <div className="flex justify-between mt-4 gap-4">
         <button
-          className="bg-white text-[#8C1931] px-4 py-2 rounded"
           onClick={handleClearCart}
+          style={{
+            width: '138.509px',
+            height: '38.234px',
+            flexShrink: 0,
+            borderRadius: '5.771px',
+            background: '#FFF',
+            boxShadow: '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset',
+            color: '#8C1931',
+            textAlign: 'center',
+            textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+            fontFamily: 'Jost, sans-serif',
+            fontSize: '21.139px',
+            fontStyle: 'normal',
+            fontWeight: 700,
+            lineHeight: 'normal',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#5e0708';
+            (e.currentTarget as HTMLButtonElement).style.color = '#FFF';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '6px 6px 8px 0px rgba(0, 0, 0, 0.4) inset';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#FFF';
+            (e.currentTarget as HTMLButtonElement).style.color = '#8C1931';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset';
+          }}
         >
-          Remove
+          REMOVE
         </button>
+
         <button
-          className="bg-white text-[#8C1931] px-4 py-2 rounded"
           onClick={handleSubmit}
+          style={{
+            width: '138.509px',
+            height: '38.234px',
+            flexShrink: 0,
+            borderRadius: '5.771px',
+            background: '#FFF',
+            boxShadow: '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.7) inset',
+            color: '#8C1931',
+            textAlign: 'center',
+            textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+            fontFamily: 'Jost, sans-serif',
+            fontSize: '21.139px',
+            fontStyle: 'normal',
+            fontWeight: 700,
+            lineHeight: 'normal',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#03aa6c';
+            (e.currentTarget as HTMLButtonElement).style.color = '#FFF';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '6px 6px 8px 0px rgba(0, 0, 0, 0.4) inset';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#FFF';
+            (e.currentTarget as HTMLButtonElement).style.color = '#8C1931';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.7) inset';
+          }}
         >
-          Confirm
+          SUBMIT
         </button>
       </div>
     </div>
@@ -82,3 +152,4 @@ const Cart = () => {
 };
 
 export default Cart;
+
