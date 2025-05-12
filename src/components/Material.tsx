@@ -49,6 +49,8 @@ const Material = ({
     }
   };
 
+  const [successMessage, setSuccessMessage] = useState("");
+
   const handleSave = async () => {
     try {
       const response = await addtoCart({
@@ -56,11 +58,16 @@ const Material = ({
         quantity: quantity,
         equipment_id: material.id,
       });
-      refreshEquipmentList(); // Refresh the list
+  
+      setSuccessMessage("Item added to cart!");
+  
+      setTimeout(() => setSuccessMessage(""), 3000); // Auto-hide
+  
+      refreshEquipmentList();
     } catch (error) {
       console.error("Error adding equipment:", error);
     }
-  };
+  };  
 
   return (
     <div>
@@ -114,12 +121,14 @@ const Material = ({
               Edit
             </button>
           ) : material.quantity > 0 ? (
-            <button
-              className="bg-[#04543C] text-white px-4 py-2 rounded hover:bg-green-700"
-              onClick={handleSave}
-            >
-              Add to Cart
-            </button>
+            <div className="flex flex-col items-start">
+              <button
+                className="bg-[#04543C] text-white px-4 py-2 rounded hover:bg-green-700"
+                onClick={handleSave}
+              >
+                Add to Cart
+              </button>
+            </div>
           ) : (
             <button
               className="bg-gray-500 text-white px-4 py-2 rounded cursor-not-allowed"
@@ -140,6 +149,16 @@ const Material = ({
           onDelete={handleDelete}
         />
       )}
+      {successMessage && (
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+        <div className="bg-white/70 px-6 py-4 rounded-lg shadow-lg text-center backdrop-blur-sm">
+          <div className="flex flex-col items-center justify-center">
+            <span className="text-3xl text-green-700 mb-2">✓</span>
+            <p className="text-lg font-semibold text-[#04543C]">{successMessage}</p>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 };
