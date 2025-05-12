@@ -106,6 +106,7 @@ const handleClearCart = async () => {
         Transaction #{cartItems?.cart_id}
       </p>
 
+
       {/* Select All */}
      {cartItems.items.length > 0 && (
       <div className="pl-20 mt-4">
@@ -170,12 +171,39 @@ const handleClearCart = async () => {
 
       {/* Action buttons */}
       <div className="flex justify-between mt-4">
+
         <button
-          className="bg-white text-[#8C1931] px-4 py-2 rounded"
           onClick={handleClearCart}
+          style={{
+            width: '138.509px',
+            height: '38.234px',
+            flexShrink: 0,
+            borderRadius: '5.771px',
+            background: '#FFF',
+            boxShadow: '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset',
+            color: '#8C1931',
+            textAlign: 'center',
+            textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+            fontFamily: 'Jost, sans-serif',
+            fontSize: '21.139px',
+            fontStyle: 'normal',
+            fontWeight: 700,
+            lineHeight: 'normal',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#5e0708';
+            (e.currentTarget as HTMLButtonElement).style.color = '#FFF';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '6px 6px 8px 0px rgba(0, 0, 0, 0.4) inset';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#FFF';
+            (e.currentTarget as HTMLButtonElement).style.color = '#8C1931';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset';
+          }}
         >
-          Remove
+          REMOVE
         </button>
+
         <button
         className={`px-4 py-2 rounded ${
           cartItems.items.length === 0
@@ -200,6 +228,7 @@ const handleClearCart = async () => {
             Close
           </button>
         </div>
+
       </div>
     )}
     </div>
