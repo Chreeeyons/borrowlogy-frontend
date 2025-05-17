@@ -12,7 +12,12 @@ export const addtoCart = async (cartItemData: {
       body: JSON.stringify(cartItemData),
     });
 
-    if (!response.ok) throw new Error("Failed to add to cart");
+    if (!response.ok) {
+      const errorText = await response.text(); // read full response error body
+      console.error("Server responded with error:", response.status, errorText);
+      throw new Error("Failed to add to cart");
+    }
+
     return await response.json();
   } catch (error) {
     console.error("Error adding equipment:", error);
@@ -68,6 +73,28 @@ export const approveCart = async ({
     return await response.json();
   } catch (error) {
     console.error("Error adding equipment:", error);
+    return null;
+  }
+};
+
+export const removeCartItems = async ({
+  cart_id,
+  equipment_ids,
+}: {
+  cart_id: number;
+  equipment_ids: number[];
+}) => {
+  try {
+    const response = await fetch(`${BASE_URL}/remove_items/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cart_id, equipment_ids }),
+    });
+
+    if (!response.ok) throw new Error("Failed to remove items");
+    return await response.json();
+  } catch (error) {
+    console.error("Error removing items:", error);
     return null;
   }
 };

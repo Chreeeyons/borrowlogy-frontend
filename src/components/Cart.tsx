@@ -1,14 +1,31 @@
-import { clearCart, getCart } from "@/services/cartService";
+import { clearCart, getCart, removeCartItems } from "@/services/cartService";
 import { addHistory } from "@/services/historyService";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState<any>([]);
+  const [cartItems, setCartItems] = useState<any>({ items: [] });
   const [remarks, setRemarks] = useState<string>("");
+  const [checkedItems, setCheckedItems] = useState<{ [key: number]: boolean }>({});
+  const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
   const fetchCartData = async () => {
     try {
       const data = await getCart(1); // Assuming user_id is 1 for demo purposes
-      setCartItems(data);
+      const itemsWithQuantity = data?.items?.map((item: any) => ({
+        ...item,
+        quantity: item.total_quantity ?? 1,
+      })) ?? [];
+
+      setCartItems({ ...data, items: itemsWithQuantity });
+
+      const initialCheckedState = itemsWithQuantity.reduce((acc: any, _item: any, index: number) => {
+        acc[index] = false;
+        return acc;
+      }, {});
+      setCheckedItems(initialCheckedState);
+      setSelectAll(false);
     } catch (error) {
       console.error("Error fetching cart data:", error);
     }
@@ -18,40 +35,130 @@ const Cart = () => {
     fetchCartData();
   }, []);
 
-  const handleSubmit = async () => {
-    await addHistory({
-      user_id: 1, // Assuming user_id is 1 for demo purposes
-      cart_id: cartItems?.cart_id, // Assuming cart_id is available in cartItems
-      borrower_date: new Date(), // Current date
-      remarks: remarks ?? "",
-    }); // Replace with actual remarks input
-    fetchCartData(); // Refresh cart data after submission
-    setRemarks(""); // Clear remarks input
+  const handleCheckboxChange = (index: number) => {
+    const updated = {
+      ...checkedItems,
+      [index]: !checkedItems[index],
+    };
+    setCheckedItems(updated);
+
+    const allChecked = Object.values(updated).every(Boolean);
+    setSelectAll(allChecked);
   };
 
-  const handleClearCart = async () => {
-    await clearCart(cartItems?.cart_id); // Assuming cart_id is available in cartItems
-    fetchCartData(); // Refresh cart data after clearing
+  const handleSelectAllChange = () => {
+    const newValue = !selectAll;
+    const newChecked = Object.keys(checkedItems).reduce((acc: any, key: string) => {
+      acc[Number(key)] = newValue;
+      return acc;
+    }, {});
+    setCheckedItems(newChecked);
+    setSelectAll(newValue);
+  };
+
+const handleSubmit = async () => {
+  await addHistory({
+    user_id: 1,
+    cart_id: cartItems?.cart_id,
+    borrower_date: new Date(),
+    remarks: remarks ?? "",
+  });
+  fetchCartData();
+  setRemarks("");
+  setIsModalOpen(true); // show modal
+};
+
+const handleClearCart = async () => {
+  const itemsToRemove = cartItems.items
+    .map((item: any, index: number) => (checkedItems[index] ? item.equipment_id : null))
+    .filter((id: number | null) => id !== null);
+
+  if (itemsToRemove.length === 0) {
+    alert("Please select items to remove.");
+    return;
+  }
+
+  await removeCartItems({
+    cart_id: cartItems?.cart_id,
+    equipment_ids: itemsToRemove,
+  });
+
+  fetchCartData();
+};
+
+  const handleIncrease = (index: number) => {
+    const updatedItems = [...cartItems.items];
+    updatedItems[index].quantity += 1;
+    setCartItems({ ...cartItems, items: updatedItems });
+  };
+
+  const handleDecrease = (index: number) => {
+    const updatedItems = [...cartItems.items];
+    if (updatedItems[index].quantity > 1) {
+      updatedItems[index].quantity -= 1;
+      setCartItems({ ...cartItems, items: updatedItems });
+    }
   };
 
   return (
     <div className="border p-4 bg-[#8C1931] rounded-md text-white">
-      {/* Transaction number placeholder */}
       <p className="text-2xl font-semibold tracking-wider">
         Transaction #{cartItems?.cart_id}
       </p>
 
-      {/* Items in cart placeholder */}
-      <ul className="mt-2 list-disc pl-20">
-        {cartItems?.items?.map((item: any, index: any) => (
+
+      {/* Select All */}
+     {cartItems.items.length > 0 && (
+      <div className="pl-20 mt-4">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={selectAll}
+            onChange={handleSelectAllChange}
+          />
+          <span>Select All</span>
+        </label>
+     </div>
+    )}
+
+      {/* Items in cart */}
+      <ul className="mt-2 ml-12 list-disc pl-20">
+        {cartItems?.items?.map((item: any, index: number) => (
           <li key={index} className="py-2 flex items-center">
+            <input
+              type="checkbox"
+              className="mr-3"
+              checked={checkedItems[index] || false}
+              onChange={() => handleCheckboxChange(index)}
+            />
             <span className="w-64 truncate">{item.equipment_name}</span>
-            <span className="w-20 text-right">{item.total_quantity} pcs</span>
+
+            {/* Quantity Selector */}
+            <div className="ml-4 flex items-center bg-white rounded-lg overflow-hidden">
+              <button
+                onClick={() => handleDecrease(index)}
+                className="px-3 py-1 text-[#8C1931] hover:bg-gray-200"
+              >
+                -
+              </button>
+              <input
+                type="text"
+                value={item.quantity}
+                readOnly
+                className="w-12 h-9 text-center bg-white text-[#8C1931] font-bold" //bold or not bold
+              />
+              <button
+                onClick={() => handleIncrease(index)}
+                className="px-3 py-1 text-[#8C1931] hover:bg-gray-200"
+              >
+                +
+              </button>
+            </div>
           </li>
         ))}
       </ul>
 
-      {/* Remarks input placeholder */}
+      {/* Remarks input */}
       <label className="font-medium block mt-4">
         Remarks:
         <textarea
@@ -62,21 +169,68 @@ const Cart = () => {
         ></textarea>
       </label>
 
-      {/* Action buttons (placeholders) */}
+      {/* Action buttons */}
       <div className="flex justify-between mt-4">
+
         <button
-          className="bg-white text-[#8C1931] px-4 py-2 rounded"
           onClick={handleClearCart}
+          style={{
+            width: '138.509px',
+            height: '38.234px',
+            flexShrink: 0,
+            borderRadius: '5.771px',
+            background: '#FFF',
+            boxShadow: '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset',
+            color: '#8C1931',
+            textAlign: 'center',
+            textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+            fontFamily: 'Jost, sans-serif',
+            fontSize: '21.139px',
+            fontStyle: 'normal',
+            fontWeight: 700,
+            lineHeight: 'normal',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#5e0708';
+            (e.currentTarget as HTMLButtonElement).style.color = '#FFF';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '6px 6px 8px 0px rgba(0, 0, 0, 0.4) inset';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = '#FFF';
+            (e.currentTarget as HTMLButtonElement).style.color = '#8C1931';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset';
+          }}
         >
-          Remove
+          REMOVE
         </button>
+
         <button
-          className="bg-white text-[#8C1931] px-4 py-2 rounded"
-          onClick={handleSubmit}
-        >
-          Confirm
-        </button>
+        className={`px-4 py-2 rounded ${
+          cartItems.items.length === 0
+            ? "bg-white text-[#8C1931] cursor-not-allowed"
+            : "bg-white text-[#8C1931]"
+        }`}
+        onClick={handleSubmit}
+        disabled={cartItems.items.length === 0}
+      >
+        Submit
+      </button>
       </div>
+      {isModalOpen && (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded shadow-lg text-center text-black">
+          <p className="text-lg font-semibold">Submission Successful!</p>
+          <p className="mt-2">Your transaction has been recorded.</p>
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="mt-4 px-4 py-2 bg-[#8C1931] text-white rounded"
+          >
+            Close
+          </button>
+        </div>
+
+      </div>
+    )}
     </div>
   );
 };

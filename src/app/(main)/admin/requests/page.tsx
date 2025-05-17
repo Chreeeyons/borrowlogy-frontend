@@ -7,6 +7,7 @@ import {
   viewAllHistoryBorrower,
 } from "@/services/historyService";
 import { approveCart } from "@/services/cartService";
+
 import { get } from "http";
 
 const Equipments = () => {
@@ -42,7 +43,7 @@ const Equipments = () => {
   ];
 
   useEffect(() => {
-    setHeaderTitle("Borrower's Requests");
+    setHeaderTitle("BORROWER'S REQUESTS");
   }, []);
 
   useEffect(() => {
@@ -182,14 +183,21 @@ const Equipments = () => {
           return (
             <div
               key={index}
-              className="border p-4 bg-[#8C1931] rounded-md text-white cursor-pointer"
+              style={{
+                backgroundColor: "#83191c",
+                borderRadius: "17px",
+                boxShadow: "6px 6px 4px 0px rgba(0, 0, 0, 0.25) inset",
+                padding: "1rem",
+                color: "#FFF",
+                cursor: "pointer",
+              }}
             >
               <div
                 className="flex justify-between items-center"
                 onClick={() => toggleCard(index)}
               >
                 <div>
-                  <p className="text-2xl font-semibold tracking-wider">
+                  <p className="text-3xl font-semibold tracking-normal">
                     {history.cart.user.name}
                   </p>
                   <p className="text-sm font-normal tracking-wider mt-1">
@@ -280,10 +288,8 @@ const Equipments = () => {
                       readOnly
                     />
                   </label>
-
                   <div className="flex justify-end mt-4">
                     <button
-                      className="bg-white text-[#8C1931] px-4 py-2 rounded"
                       onClick={() =>
                         openConfirmModal(
                           history.id,
@@ -292,8 +298,42 @@ const Equipments = () => {
                           history.cart.user.name
                         )
                       }
+                      style={{
+                        width: "138.509px",
+                        height: "38.234px",
+                        flexShrink: 0,
+                        borderRadius: "5.771px",
+                        background: "#FFF",
+                        boxShadow: "6px 6px 4px 0px rgba(0, 0, 0, 0.25) inset",
+                        color: "#8C1931",
+                        textAlign: "center",
+                        textShadow: "0px 2px 4px rgba(0, 0, 0, 0.25)",
+                        fontFamily: "Jost",
+                        fontSize: "16px",
+                        fontWeight: 700,
+                        lineHeight: "normal",
+                        fontStyle: "bold",
+                      }}
+                      onMouseEnter={(e) => {
+                        (
+                          e.currentTarget as HTMLButtonElement
+                        ).style.background = "#03aa6c";
+                        (e.currentTarget as HTMLButtonElement).style.color =
+                          "#FFF";
+                        (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                          "6px 6px 8px 0px rgba(0, 0, 0, 0.4) inset";
+                      }}
+                      onMouseLeave={(e) => {
+                        (
+                          e.currentTarget as HTMLButtonElement
+                        ).style.background = "#FFF";
+                        (e.currentTarget as HTMLButtonElement).style.color =
+                          "#8C1931";
+                        (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                          "6px 6px 4px 0px rgba(0, 0, 0, 0.25) inset";
+                      }}
                     >
-                      Confirm
+                      CONFIRM
                     </button>
                   </div>
                 </>
