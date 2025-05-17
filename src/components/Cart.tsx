@@ -205,25 +205,47 @@ const handleClearCart = async () => {
         </button>
 
         <button
-        className={`px-4 py-2 rounded ${
-          cartItems.items.length === 0
-            ? "bg-white text-[#8C1931] cursor-not-allowed"
-            : "bg-white text-[#8C1931]"
-        }`}
-        onClick={handleSubmit}
-        disabled={cartItems.items.length === 0}
-      >
-        Submit
-      </button>
+          onClick={handleSubmit}
+          style={{
+            width: '138.509px',
+            height: '38.234px',
+            flexShrink: 0,
+            borderRadius: '5.771px',
+            background: '#FFF',
+            boxShadow: '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset',
+            color: '#8C1931',
+            textAlign: 'center',
+            textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+            fontFamily: 'Jost, sans-serif',
+            fontSize: '21.139px',
+            fontStyle: 'normal',
+            fontWeight: 700,
+            lineHeight: 'normal',
+          }}
+          onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = '#5e0708';
+              (e.currentTarget as HTMLButtonElement).style.color = '#FFF';
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '6px 6px 8px 0px rgba(0, 0, 0, 0.4) inset';
+          }}
+          onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = '#FFF';
+              (e.currentTarget as HTMLButtonElement).style.color = '#8C1931';
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset';
+          }}
+          disabled={cartItems.items.length === 0}
+          >
+            SUBMIT
+        </button>
+
       </div>
       {isModalOpen && (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded shadow-lg text-center text-black">
-          <p className="text-lg font-semibold">Submission Successful!</p>
+          <p className="text-lg font-semibold">Request Submitted!</p>
           <p className="mt-2">Your transaction has been recorded.</p>
           <button
             onClick={() => setIsModalOpen(false)}
-            className="mt-4 px-4 py-2 bg-[#8C1931] text-white rounded"
+            className="mt-4 px-4 py-2 bg-[#04543C] text-white rounded"
           >
             Close
           </button>
