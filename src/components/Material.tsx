@@ -14,7 +14,8 @@ const Material = ({
   refreshEquipmentList,
 }: MaterialProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState<number | null>(1);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleDelete = async () => {
     try {
@@ -38,25 +39,30 @@ const Material = ({
   };
 
   const handleIncrease = () => {
-    if (quantity < material.quantity) {
-      setQuantity((prev) => prev + 1);
+    if (quantity !== null && quantity < material.quantity) {
+      setQuantity((prev) => (prev !== null ? prev + 1 : 1));
     }
   };
 
   const handleDecrease = () => {
-    if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
+    if (quantity !== null && quantity > 1) {
+      setQuantity((prev) => (prev !== null ? prev - 1 : 1));
     }
   };
 
   const handleSave = async () => {
+    if (quantity === null) return; // Prevent invalid submit
+
     try {
       const response = await addtoCart({
         user_id: 1,
         quantity: quantity,
         equipment_id: material.id,
       });
-      refreshEquipmentList(); // Refresh the list
+
+      setSuccessMessage("Successfully added to cart!");
+      setTimeout(() => setSuccessMessage(""), 3000); // Auto-hide
+      refreshEquipmentList();
     } catch (error) {
       console.error("Error adding equipment:", error);
     }
@@ -99,10 +105,28 @@ const Material = ({
                 -
               </button>
               <input
-                type="text"
-                value={quantity}
-                readOnly
-                className="w-12 h-9 text-center font-bold bg-gray-200 text-[#8C1931]"
+                type="number"
+                value={quantity !== null ? quantity : ""}
+                min={1}
+                max={material.quantity}
+                onChange={(e) => {
+                  const val = e.target.value;
+
+                  if (val === "") {
+                    setQuantity(null);
+                  } else {
+                    const parsedVal = parseInt(val);
+                    if (!isNaN(parsedVal)) {
+                      setQuantity(
+                        Math.max(1, Math.min(parsedVal, material.quantity))
+                      );
+                    }
+                  }
+                }}
+                className="w-16 h-9 text-center bg-gray-200 text-[#8C1931] outline-none 
+                [&::-webkit-outer-spin-button]:appearance-none 
+                [&::-webkit-inner-spin-button]:appearance-none 
+                [-moz-appearance:textfield]"
               />
               <button
                 onClick={handleIncrease}
@@ -147,39 +171,14 @@ const Material = ({
         </button>
 
           ) : material.quantity > 0 ? (
-            <button
-              onClick={handleSave}
-              style={{
-                width: '138.509px',
-                height: '38.234px',
-                flexShrink: 0,
-                borderRadius: '5.771px',
-                background: '#FFF',
-                boxShadow: '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.7) inset',
-                color: '#8C1931',
-                textAlign: 'center',
-                textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-                fontFamily: 'Jost, sans-serif',
-                fontSize: '21.139px',
-                fontStyle: 'normal',
-                fontWeight: 700,
-                lineHeight: 'normal',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = '#03aa6c';
-                (e.currentTarget as HTMLButtonElement).style.color = '#FFF';
-                (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                  '6px 6px 8px 0px rgba(0, 0, 0, 0.4) inset';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = '#FFF';
-                (e.currentTarget as HTMLButtonElement).style.color = '#8C1931';
-                (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                  '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.7) inset';
-              }}
-            >
-              ADD
-            </button>
+            <div className="flex flex-col items-start">
+              <button
+                className="bg-[#04543C] text-white px-4 py-2 rounded hover:bg-green-700"
+                onClick={handleSave}
+              >
+                Add to Cart
+              </button>
+            </div>
           ) : (
             <button
               disabled
@@ -216,6 +215,20 @@ const Material = ({
           onSave={refreshEquipmentList}
           onDelete={handleDelete}
         />
+      )}
+
+      {/* Success Message */}
+      {successMessage && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-white/70 px-6 py-4 rounded-lg shadow-lg text-center backdrop-blur-sm">
+            <div className="flex flex-col items-center justify-center">
+              <span className="text-3xl text-green-700 mb-2">✓</span>
+              <p className="text-lg font-semibold text-[#04543C]">
+                {successMessage}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
