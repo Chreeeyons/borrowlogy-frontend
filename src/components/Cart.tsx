@@ -56,17 +56,22 @@ const Cart = () => {
     setSelectAll(newValue);
   };
 
-const handleSubmit = async () => {
-  await addHistory({
-    user_id: 1,
-    cart_id: cartItems?.cart_id,
-    borrower_date: new Date(),
-    remarks: remarks ?? "",
-  });
-  fetchCartData();
-  setRemarks("");
-  setIsModalOpen(true); // show modal
-};
+  const handleSubmit = async () => {
+    await addHistory({
+      user_id: 1,
+      cart_id: cartItems?.cart_id,
+      borrower_date: new Date(),
+      remarks: remarks ?? "",
+    });
+    fetchCartData();
+    setRemarks("");
+    setIsModalOpen(true); // Show modal
+  
+    // Auto-hide modal after 3 seconds
+    setTimeout(() => {
+      setIsModalOpen(false);
+    }, 3000);
+  };  
 
 const handleClearCart = async () => {
   const itemsToRemove = cartItems.items
@@ -270,20 +275,17 @@ const handleClearCart = async () => {
 
       </div>
       {isModalOpen && (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded shadow-lg text-center text-black">
-          <p className="text-lg font-semibold">Request Submitted!</p>
-          <p className="mt-2">Your transaction has been recorded.</p>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="mt-4 px-4 py-2 bg-[#04543C] text-white rounded"
-          >
-            Close
-          </button>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-white/70 px-6 py-4 rounded-lg shadow-lg text-center backdrop-blur-sm">
+            <div className="flex flex-col items-center justify-center">
+              <span className="text-3xl text-green-700 mb-2">✓</span>
+              <p className="text-lg font-semibold text-[#04543C]">
+                Request Submitted!
+              </p>
+            </div>
+          </div>
         </div>
-
-      </div>
-    )}
+      )}
     </div>
   );
 };
