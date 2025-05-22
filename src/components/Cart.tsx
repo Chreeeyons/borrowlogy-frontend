@@ -56,17 +56,22 @@ const Cart = () => {
     setSelectAll(newValue);
   };
 
-const handleSubmit = async () => {
-  await addHistory({
-    user_id: 1,
-    cart_id: cartItems?.cart_id,
-    borrower_date: new Date(),
-    remarks: remarks ?? "",
-  });
-  fetchCartData();
-  setRemarks("");
-  setIsModalOpen(true); // show modal
-};
+  const handleSubmit = async () => {
+    await addHistory({
+      user_id: 1,
+      cart_id: cartItems?.cart_id,
+      borrower_date: new Date(),
+      remarks: remarks ?? "",
+    });
+    fetchCartData();
+    setRemarks("");
+    setIsModalOpen(true); // Show modal
+  
+    // Auto-hide modal after 3 seconds
+    setTimeout(() => {
+      setIsModalOpen(false);
+    }, 3000);
+  };  
 
 const handleClearCart = async () => {
   const itemsToRemove = cartItems.items
@@ -101,8 +106,16 @@ const handleClearCart = async () => {
   };
 
   return (
-    <div className="border p-4 bg-[#8C1931] rounded-md text-white">
-      <p className="text-2xl font-semibold tracking-wider">
+    <div
+      style={{
+        backgroundColor: '#EEE9E5',
+        borderRadius: '20px',
+        boxShadow: '3px 3px 6px 0px rgba(0, 0, 0, 0.5) inset',
+        padding: '1rem',
+        color: '#000000',
+      }}
+    >
+      <p className="text-4xl font-semibold tracking-normal">
         Transaction #{cartItems?.cart_id}
       </p>
 
@@ -110,7 +123,7 @@ const handleClearCart = async () => {
       {/* Select All */}
      {cartItems.items.length > 0 && (
       <div className="pl-20 mt-4">
-        <label className="flex items-center space-x-2">
+        <label className="flex items-center space-x-2 font-bold">
           <input
             type="checkbox"
             checked={selectAll}
@@ -132,41 +145,64 @@ const handleClearCart = async () => {
               onChange={() => handleCheckboxChange(index)}
             />
             <span className="w-64 truncate">{item.equipment_name}</span>
+          {/* Quantity Selector */}
+          <div className="ml-4 flex items-center bg-white rounded-lg overflow-hidden h-9">
+            <button
+              onClick={() => handleDecrease(index)}
+              className="w-9 h-full text-[#000000] hover:bg-gray-200 flex items-center justify-center"
+              style={{
+                boxShadow: 'none',
+                borderRight: 'none',
+              }}
+            >
+              -
+            </button>
+            <input
+              type="text"
+              value={item.quantity}
+              readOnly
+              className="w-12 h-full text-center bg-white text-[#000000] font-bold border-0 outline-none"
+              style={{
+                boxShadow: 'none',
+              }}
+            />
+            <button
+              onClick={() => handleIncrease(index)}
+              className="w-9 h-full text-[#000000] hover:bg-gray-200 flex items-center justify-center"
+              style={{
+                boxShadow: 'none',
+                borderLeft: 'none',
+              }}
+            >
+              +
+            </button>
+          </div>
 
-            {/* Quantity Selector */}
-            <div className="ml-4 flex items-center bg-white rounded-lg overflow-hidden">
-              <button
-                onClick={() => handleDecrease(index)}
-                className="px-3 py-1 text-[#8C1931] hover:bg-gray-200"
-              >
-                -
-              </button>
-              <input
-                type="text"
-                value={item.quantity}
-                readOnly
-                className="w-12 h-9 text-center bg-white text-[#8C1931] font-bold" //bold or not bold
-              />
-              <button
-                onClick={() => handleIncrease(index)}
-                className="px-3 py-1 text-[#8C1931] hover:bg-gray-200"
-              >
-                +
-              </button>
-            </div>
           </li>
         ))}
       </ul>
 
       {/* Remarks input */}
-      <label className="font-medium block mt-4">
+      <label className="font-bold block mt-4 text-black">
         Remarks:
         <textarea
-          className="w-full border rounded p-2 mt-2 font-normal text-black bg-white"
           placeholder="Enter remarks here..."
           onChange={(e) => setRemarks(e.target.value)}
           value={remarks}
-        ></textarea>
+          style={{
+            width: '100%',
+            height: '100px',
+            borderRadius: '12px',
+            background: '#FFF',
+            boxShadow: '3px 3px 2.886px 0px rgba(0, 0, 0, 0.25) inset',
+            padding: '0.5rem',
+            marginTop: '0.5rem',
+            color: '#000',
+            fontWeight: '400',
+            fontFamily: 'inherit',
+            resize: 'none',
+          }}
+        />
       </label>
 
       {/* Action buttons */}
@@ -175,13 +211,13 @@ const handleClearCart = async () => {
         <button
           onClick={handleClearCart}
           style={{
-            width: '138.509px',
+            width: '120px',
             height: '38.234px',
             flexShrink: 0,
-            borderRadius: '5.771px',
+            borderRadius: '6px',
             background: '#FFF',
-            boxShadow: '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset',
-            color: '#8C1931',
+            boxShadow: "4px 4px 8px 2px rgba(0, 0, 0, 0.3)",
+            color: '#000000',
             textAlign: 'center',
             textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
             fontFamily: 'Jost, sans-serif',
@@ -197,23 +233,23 @@ const handleClearCart = async () => {
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLButtonElement).style.background = '#FFF';
-            (e.currentTarget as HTMLButtonElement).style.color = '#8C1931';
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset';
+            (e.currentTarget as HTMLButtonElement).style.color = '#000000';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = "4px 4px 8px 2px rgba(0, 0, 0, 0.3)";
           }}
         >
-          REMOVE
+          Remove
         </button>
 
         <button
           onClick={handleSubmit}
           style={{
-            width: '138.509px',
+            width: '120px',
             height: '38.234px',
             flexShrink: 0,
-            borderRadius: '5.771px',
+            borderRadius: '6px',
             background: '#FFF',
-            boxShadow: '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset',
-            color: '#8C1931',
+            boxShadow: "4px 4px 8px 2px rgba(0, 0, 0, 0.3)",
+            color: '#000000',
             textAlign: 'center',
             textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
             fontFamily: 'Jost, sans-serif',
@@ -223,36 +259,33 @@ const handleClearCart = async () => {
             lineHeight: 'normal',
           }}
           onMouseEnter={e => {
-              (e.currentTarget as HTMLButtonElement).style.background = '#5e0708';
+              (e.currentTarget as HTMLButtonElement).style.background = '#03aa6c';
               (e.currentTarget as HTMLButtonElement).style.color = '#FFF';
               (e.currentTarget as HTMLButtonElement).style.boxShadow = '6px 6px 8px 0px rgba(0, 0, 0, 0.4) inset';
           }}
           onMouseLeave={e => {
               (e.currentTarget as HTMLButtonElement).style.background = '#FFF';
-              (e.currentTarget as HTMLButtonElement).style.color = '#8C1931';
-              (e.currentTarget as HTMLButtonElement).style.boxShadow = '0px 2.886px 2.886px 0px rgba(0, 0, 0, 0.25) inset';
+              (e.currentTarget as HTMLButtonElement).style.color = '#000000';
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "4px 4px 8px 2px rgba(0, 0, 0, 0.3)";
           }}
           disabled={cartItems.items.length === 0}
           >
-            SUBMIT
+            Submit
         </button>
 
       </div>
       {isModalOpen && (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded shadow-lg text-center text-black">
-          <p className="text-lg font-semibold">Request Submitted!</p>
-          <p className="mt-2">Your transaction has been recorded.</p>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="mt-4 px-4 py-2 bg-[#04543C] text-white rounded"
-          >
-            Close
-          </button>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="bg-white/70 px-6 py-4 rounded-lg shadow-lg text-center backdrop-blur-sm">
+            <div className="flex flex-col items-center justify-center">
+              <span className="text-3xl text-green-700 mb-2">✓</span>
+              <p className="text-lg font-semibold text-[#04543C]">
+                Request Submitted!
+              </p>
+            </div>
+          </div>
         </div>
-
-      </div>
-    )}
+      )}
     </div>
   );
 };
